@@ -1,8 +1,8 @@
 # Simple base class, modeled after the base.pp manifest in
 # openstack-infra/config/modules/openstack_project/manifests/base.pp
 
-class os-ext-testing::base(
-  $certname = $::fqdn,
+class os_ext_testing::base(
+  $certname = $::fqdn
 ) {
   if ($::osfamily == 'Debian') {
     include apt

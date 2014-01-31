@@ -27,5 +27,5 @@ if [[ ! -e $KEY_FILE_PATH ]]; then
 fi
 JENKINS_SSH_PRIVATE_KEY=`cat $KEY_FILE_PATH`
 JENKINS_SSH_PUBLIC_KEY=`cat $KEY_FILE_PATH.pub`
-sudo puppet apply $PUPPET_MODULE_PATH -e "class {'os-ext-testing::base'}"
+sudo puppet apply $PUPPET_MODULE_PATH -e "class {'os_ext_testing::base'}"
 sudo puppet apply $PUPPET_MODULE_PATH -e "class {'jenkins::master': jenkins_ssh_public_key => '$JENKINS_SSH_PUBLIC_KEY', jenkins_ssh_private_key => '$JENKINS_SSH_PRIVATE_KEY'}"
