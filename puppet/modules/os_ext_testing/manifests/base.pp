@@ -2,7 +2,7 @@
 # openstack-infra/config/modules/openstack_project/manifests/base.pp
 
 class os_ext_testing::base(
-  $certname = $::fqdn
+  $certname = $::fqdn,
 ) {
   if ($::osfamily == 'Debian') {
     include apt
