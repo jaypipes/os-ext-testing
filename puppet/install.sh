@@ -28,10 +28,4 @@ fi
 JENKINS_SSH_PRIVATE_KEY=`cat $KEY_FILE_PATH`
 JENKINS_SSH_PUBLIC_KEY=`cat $KEY_FILE_PATH.pub`
 
-# Need to symlink the shared files directory into a directory
-# that Puppet will understand...
-if [[ ! -e puppet/modules/os_ext_testing/files ]]; then
-  ln -s share/files/ puppet/modules/os_ext_testing/files
-fi
-
 sudo puppet apply --verbose $PUPPET_MODULE_PATH -e "class {'os_ext_testing::jenkins': jenkins_ssh_public_key => '$JENKINS_SSH_PUBLIC_KEY', jenkins_ssh_private_key => '$JENKINS_SSH_PRIVATE_KEY'}"
