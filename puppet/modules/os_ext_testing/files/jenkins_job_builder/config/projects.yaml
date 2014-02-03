@@ -1,0 +1,6 @@
+- project:
+    name: cinder
+    github-org: openstack
+
+    jobs:
+      - myvendor-devstack-tempest-volume-api
