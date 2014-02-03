@@ -1,6 +1,5 @@
 - job-template:
     name: myvendor-devstack-tempest-volume-api
-    node: '{node}'
 
     wrappers:
       - timeout:
