@@ -20,8 +20,8 @@ class os_ext_testing::jenkins (
   class { '::jenkins::master':
     vhost_name              => $vhost_name,
     logo                    => 'openstack.png',
-    ssl_cert_file           => "etc/ssl/certs/${vhost_name}.pem",
-    ssl_key_file            => "etc/ssl/private/${vhost_name}.key",
+    ssl_cert_file           => "/etc/ssl/certs/${vhost_name}.pem",
+    ssl_key_file            => "/etc/ssl/private/${vhost_name}.key",
     ssl_chain_file          => $ssl_chain_file,
     ssl_cert_file_contents  => $ssl_cert_file_contents,
     ssl_key_file_contents   => $ssl_key_file_contents,

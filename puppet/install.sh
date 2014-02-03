@@ -55,6 +55,7 @@ emailAddress            = openstack@openstack.org
   # Generate the certificate from the CSR
   sudo openssl rsa -in new.key.pem -out new.cert.key
   sudo openssl x509 -in new.ssl.csr -out new.cert.cert -req -signkey new.cert.key -days 3650
+  sleep 1
 fi
 SSL_CERT_FILE=`sudo cat $SSL_ROOT_DIR/new.cert.cert`
 SSL_KEY_FILE=`sudo cat $SSL_ROOT_DIR/new.cert.key`
