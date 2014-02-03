@@ -55,9 +55,9 @@ emailAddress            = openstack@openstack.org
   # Generate the certificate from the CSR
   sudo openssl rsa -in new.key.pem -out new.cert.key
   sudo openssl x509 -in new.ssl.csr -out new.cert.cert -req -signkey new.cert.key -days 3650
-  sleep 1
+  cd ../
 fi
 SSL_CERT_FILE=`sudo cat $SSL_ROOT_DIR/new.cert.cert`
 SSL_KEY_FILE=`sudo cat $SSL_ROOT_DIR/new.cert.key`
 
-sudo puppet apply --verbose $PUPPET_MODULE_PATH -e "class {'os_ext_testing::jenkins': jenkins_ssh_public_key => '$JENKINS_SSH_PUBLIC_KEY', jenkins_ssh_private_key => '$JENKINS_SSH_PRIVATE_KEY', ssl_cert_file_contents = '$SSL_CERT_FILE', ssl_key_file_contents = '$SSL_KEY_FILE'}"
+sudo puppet apply --verbose $PUPPET_MODULE_PATH -e "class {'os_ext_testing::jenkins': jenkins_ssh_public_key => '$JENKINS_SSH_PUBLIC_KEY', jenkins_ssh_private_key => '$JENKINS_SSH_PRIVATE_KEY', ssl_cert_file_contents => '$SSL_CERT_FILE', ssl_key_file_contents => '$SSL_KEY_FILE'}"
