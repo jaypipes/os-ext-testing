@@ -139,7 +139,7 @@ class os_ext_testing::jenkins (
       owner  => 'root',
       group  => 'root',
       mode   => '0755',
-      content => template('puppet:///modules/os_ext_testing/jenkins_job_builder/config/macros.yaml.erb'),
+      content => template('os_ext_testing/jenkins_job_builder/config/macros.yaml.erb'),
       notify  => Exec['jenkins_jobs_update'],
     }
 
