@@ -28,13 +28,13 @@
     builders:
       - shell: |
           #!/bin/sh
-          echo "Detailed logs: http://logs.openstack.org/$LOG_PATH/"
+        echo "Detailed logs: http://<%= @log_url_root %>/$LOG_PATH/"
 
 - publisher:
     name: console-log
     publishers:
       - scp:
-          site: 'static.openstack.org'
+          site: '<%= @static_url_root %>'
           files:
             - target: 'logs/$LOG_PATH'
               copy-console: true
@@ -44,7 +44,7 @@
     name: devstack-logs
     publishers:
       - scp:
-          site: 'static.openstack.org'
+          site: '<%= @static_url_root %>'
           files:
             - target: 'logs/$LOG_PATH'
               source: 'logs/**'

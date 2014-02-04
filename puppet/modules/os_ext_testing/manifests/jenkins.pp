@@ -8,6 +8,8 @@ class os_ext_testing::jenkins (
   $ssl_chain_file_contents = '',
   $jenkins_ssh_private_key = '',
   $jenkins_ssh_public_key = '',
+  $log_root_url= "logs.$::fqdn",
+  $static_root_url= "static.$::fqdn",
 ) {
   include os_ext_testing::base
 
@@ -109,7 +111,7 @@ class os_ext_testing::jenkins (
     version => '0.24',
   }
   jenkins::plugin { 'gerrit':
-    version => '0.7',
+    version => '2.11.0',
   }
 
   if $manage_jenkins_jobs == true {
@@ -129,6 +131,15 @@ class os_ext_testing::jenkins (
       force   => true,
       source  =>
         'puppet:///modules/os_ext_testing/jenkins_job_builder/config',
+      notify  => Exec['jenkins_jobs_update'],
+    }
+
+    file { '/etc/jenkins_jobs/config/macros.yaml':
+      ensure => present,
+      owner  => 'root',
+      group  => 'root',
+      mode   => '0755',
+      content => template('puppet:///modules/os_ext_testing/jenkins_jobs/config/macros.yaml.erb'),
       notify  => Exec['jenkins_jobs_update'],
     }
 
