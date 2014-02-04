@@ -12,7 +12,7 @@ PUPPET_MODULE_PATH="--modulepath=/root/os-ext-testing/puppet/modules:/root/confi
 
 # Install Puppet and the OpenStack Infra Config source tree
 if [[ ! -e install_puppet.sh ]]; then
-  wget https://git.openstack.org/cgit/openstack-infra/config/plain/install_puppet.sh --no-check-certificates
+  wget https://git.openstack.org/cgit/openstack-infra/config/plain/install_puppet.sh --no-check-certificate
   sudo bash -xe install_puppet.sh
   sudo git clone https://review.openstack.org/p/openstack-infra/config.git \
     /root/config
