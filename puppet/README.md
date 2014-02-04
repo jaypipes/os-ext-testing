@@ -15,6 +15,6 @@ in an external OpenStack testing platform, simply run the `puppet/install.sh`
 Bash script, as the root user:
 
 ```
-wget https://raw.github.com/jaypipes/os-ext-testing/master/puppet/install.sh --no-check-certificates
+wget https://raw.github.com/jaypipes/os-ext-testing/master/puppet/install.sh
 sudo bash install.sh
 ```
