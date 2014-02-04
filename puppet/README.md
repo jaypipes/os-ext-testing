@@ -18,3 +18,7 @@ Bash script, as the root user:
 wget https://raw.github.com/jaypipes/os-ext-testing/master/puppet/install.sh
 sudo bash install.sh
 ```
+
+Note that you will need to have the `wget`, `openssl`, `ssl-cert` and
+`ca-certificates` packages installed on your host or VM before running the
+above.
