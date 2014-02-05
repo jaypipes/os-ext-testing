@@ -110,9 +110,6 @@ class os_ext_testing::jenkins (
   jenkins::plugin { 'urltrigger':
     version => '0.24',
   }
-  jenkins::plugin { 'gerrit':
-    version => '2.11.0',
-  }
 
   if $manage_jenkins_jobs == true {
     class { '::jenkins::job_builder':

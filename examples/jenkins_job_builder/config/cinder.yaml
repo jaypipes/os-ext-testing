@@ -8,27 +8,7 @@
       - timestamps
     
     triggers:
-      - gerrit:
-        trigger-on-comment-added-event: true
-        trigger-on-patchset-uploaded-event: true
-        trigger-on-patchset-restored-event: true
-        gerrit-build-successful-verified-value: 1
-        gerrit-build-failed-verified-value: -1
-        successful-message: Looks good according to MyVendor!
-        failure-message: Does not seem to work for MyVendor!
-        projects:
-          - project-compare-type: 'PLAIN'
-            project-pattern: 'openstack/cinder'
-            branch-compare-type: 'ANT'
-            branch-pattern: '**'
-        skip-vote:
-          successful: false
-          failed: false
-          unstable: true
-          notbuilt: true
-        silent: false
-        escape-quotes: true
-        no-name-and-email: true
+      - zuul:
 
     builders:
       - devstack-checkout
