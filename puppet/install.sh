@@ -31,16 +31,16 @@ fi
 
 # Clone or pull the the os-ext-testing repository
 if [[ ! -d $OSEXT_PATH ]]; then
-    sudo git clone https://github.com/jaypipes/os-ext-testing $OSEXT_PATH
-elif [[ "$PULL_LATEST_OSEXT_REPO" -eq "1" ]]; then
+    git clone https://github.com/jaypipes/os-ext-testing $OSEXT_PATH
+elif [[ "$PULL_LATEST_OSEXT_REPO" == "1" ]]; then
     echo "Pulling latest os-ext-testing repo master."
-    cd $OSEXT_PATH; git checkout master && git pull; cd $THIS_DIR
+    cd $OSEXT_PATH; git checkout master && sudo git pull; cd $THIS_DIR
 fi
 
 if [[ ! -e $DATA_REPO_INFO_FILE ]]; then
-    echo "Enter the git or https:// URI for the location of your config data repository. Example: git@github.com:jaypipes/os-ext-testing-data"
+    echo "Enter the URI for the location of your config data repository. Example: https://github.com/jaypipes/os-ext-testing-data"
     read data_repo_uri
-    if [[ "$data_repo_uri" -eq "" ]]; then
+    if [[ "$data_repo_uri" == "" ]]; then
         echo "Data repository is required to proceed. Exiting."
         exit 1
     fi
@@ -51,24 +51,24 @@ else
     echo "Using data repository: $data_repo_uri" 
 fi
 
-if [[ "$PULL_LATEST_DATA_REPO" -eq "1" ]]; then
+if [[ "$PULL_LATEST_DATA_REPO" == "1" ]]; then
     echo "Pulling latest data repo master."
-    cd $DATA_REPO_PATH; git checkout master && git pull; cd $THIS_DIR;
+    cd $DATA_PATH; git checkout master && git pull; cd $THIS_DIR;
 fi
 
 # Pulling in variables from data repository
-source $DATA_REPO_PATH/vars.sh
+source $DATA_PATH/vars.sh
 
 if [[ -z $UPSTREAM_GERRIT_USER ]]; then
-    echo "Expected to find UPSTREAM_GERRIT_USER in $DATA_REPO_PATH/vars.sh. Please correct. Exiting."
+    echo "Expected to find UPSTREAM_GERRIT_USER in $DATA_PATH/vars.sh. Please correct. Exiting."
 else
     echo "Using upstream Gerrit user: $UPSTREAM_GERRIT_USER"
 fi
 
-if [[ -e $DATA_REPO_PATH/$UPSTREAM_GERRIT_SSH_KEY_PATH ]]; then
-    echo "Expected to find $UPSTREAM_GERRIT_SSH_KEY_PATH in $DATA_REPO_PATH. Please correct. Exiting."
+if [[ -e $DATA_PATH/$UPSTREAM_GERRIT_SSH_KEY_PATH ]]; then
+    echo "Expected to find $UPSTREAM_GERRIT_SSH_KEY_PATH in $DATA_PATH. Please correct. Exiting."
 fi
-export UPSTREAM_GERRIT_SSH_PRIVATE_KEY_CONTENTS=`cat $DATA_REPO_PATH/$UPSTREAM_GERRIT_SSH_PRIVATE_KEY_PATH`
+export UPSTREAM_GERRIT_SSH_PRIVATE_KEY_CONTENTS=`cat $DATA_PATH/$UPSTREAM_GERRIT_SSH_PRIVATE_KEY_PATH`
 
 # Create a self-signed SSL certificate for use in Apache
 if [[ ! -e $APACHE_SSL_ROOT_DIR/new.ssl.csr ]]; then
@@ -111,8 +111,8 @@ JENKINS_SSH_PRIVATE_KEY=`cat $JENKINS_KEY_FILE_PATH`
 JENKINS_SSH_PUBLIC_KEY=`cat $JENKINS_KEY_FILE_PATH.pub`
 
 CLASS_ARGS="jenkins_ssh_public_key => '$JENKINS_SSH_PUBLIC_KEY', jenkins_ssh_private_key => '$JENKINS_SSH_PRIVATE_KEY', "
-CLASS_ARGS+="ssl_cert_file_contents => '$APACHE_SSL_CERT_FILE', ssl_key_file_contents => '$APACHE_SSL_KEY_FILE', "
-CLASS_ARGS+="upstream_gerrit_user => '$UPSTREAM_GERRIT_USER', "
-CLASS_ARGS+="upstream_gerrit_ssh_private_key => '$UPSTREAM_SSH_PRIVATE_KEY_CONTENTS', "
+CLASS_ARGS="$CLASS_ARGS ssl_cert_file_contents => '$APACHE_SSL_CERT_FILE', ssl_key_file_contents => '$APACHE_SSL_KEY_FILE', "
+CLASS_ARGS="$CLASS_ARGS upstream_gerrit_user => '$UPSTREAM_GERRIT_USER', "
+CLASS_ARGS="$CLASS_ARGS upstream_gerrit_ssh_private_key => '$UPSTREAM_SSH_PRIVATE_KEY_CONTENTS', "
 
 sudo puppet apply --verbose $PUPPET_MODULE_PATH -e "class {'os_ext_testing::ci': $CLASS_ARGS }"
