@@ -1,7 +1,10 @@
-class os_ext_testing::jenkins (
+# Puppet module that installs Jenkins, Zuul, Jenkins Job Builder,
+# and installs JJB and Zuul configuration files from a repository
+# called the "data repository".
+
+class os_ext_testing::ci (
   $vhost_name = $::fqdn,
-  $jenkins_jobs_password = '',
-  $jenkins_jobs_username = 'jenkins',
+  $data_repo_dir = '',
   $manage_jenkins_jobs = true,
   $ssl_cert_file_contents = '',
   $ssl_key_file_contents = '',
@@ -10,6 +13,9 @@ class os_ext_testing::jenkins (
   $jenkins_ssh_public_key = '',
   $log_root_url= "logs.$::fqdn",
   $static_root_url= "static.$::fqdn",
+  $upstream_gerrit_server = 'review.openstack.org',
+  $upstream_gerrit_user = '',
+  $upstream_gerrit_ssh_private_key = '',
 ) {
   include os_ext_testing::base
 
@@ -114,10 +120,13 @@ class os_ext_testing::jenkins (
   if $manage_jenkins_jobs == true {
     class { '::jenkins::job_builder':
       url      => "https://${vhost_name}/",
-      username => $jenkins_jobs_username,
-      password => $jenkins_jobs_password,
+      username => 'jenkins',
+      password => '',
     }
 
+    # Here, we create the JJB config directory and populate it with
+    # files from both the os-ext-testing repository and the data
+    # repository's etc/jenkins_jobs/config directory.
     file { '/etc/jenkins_jobs/config':
       ensure  => directory,
       owner   => 'root',
@@ -128,6 +137,16 @@ class os_ext_testing::jenkins (
       force   => true,
       source  =>
         'puppet:///modules/os_ext_testing/jenkins_job_builder/config',
+      notify  => Exec['jenkins_jobs_update'],
+    }
+
+    file { '/etc/jenkins_jobs/config':
+      ensure  => directory,
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0755',
+      recurse => true,
+      source  => "$data_repo_dir/etc/jenkins_job_builder/config",
       notify  => Exec['jenkins_jobs_update'],
     }
 
@@ -148,4 +167,55 @@ class os_ext_testing::jenkins (
       source => 'puppet:///modules/openstack_project/jenkins/jenkins.default',
     }
   }
+
+  class { '::zuul':
+    vhost_name           => $vhost_name,
+    gerrit_server        => $upstream_gerrit_server,
+    gerrit_user          => $upstream_gerrit_user,
+    zuul_ssh_private_key => $upstream_gerrit_ssh_private_key,
+    url_pattern          => $url_pattern,
+    zuul_url             => $zuul_url,
+    push_change_refs     => false,
+    job_name_in_report   => true,
+    status_url           => 'http://status.$::fqdn/zuul/',
+    statsd_host          => $statsd_host,
+    replication_targets  => $replication_targets,
+  }
+
+  file { '/etc/zuul/layout.yaml':
+    ensure => present,
+      source  => "$data_repo_dir/etc/zuul/layout.yaml",
+    notify => Exec['zuul-reload'],
+  }
+
+  file { '/etc/zuul/openstack_functions.py':
+    ensure => present,
+    source => 'puppet:///modules/openstack_project/zuul/openstack_functions.py',
+    notify => Exec['zuul-reload'],
+  }
+
+  file { '/etc/zuul/logging.conf':
+    ensure => present,
+    source => 'puppet:///modules/openstack_project/zuul/logging.conf',
+    notify => Exec['zuul-reload'],
+  }
+
+  file { '/etc/zuul/gearman-logging.conf':
+    ensure => present,
+    source => 'puppet:///modules/openstack_project/zuul/gearman-logging.conf',
+    notify => Exec['zuul-reload'],
+  }
+
+  class { '::recheckwatch':
+    gerrit_server                => $upstream_gerrit_server,
+    gerrit_user                  => $upstream_gerrit_user,
+    recheckwatch_ssh_private_key => $upstream_gerrit_ssh_private_key,
+  }
+
+  file { '/var/lib/recheckwatch/scoreboard.html':
+    ensure  => present,
+    source  => 'puppet:///modules/openstack_project/zuul/scoreboard.html',
+    require => File['/var/lib/recheckwatch'],
+  }
 }
+

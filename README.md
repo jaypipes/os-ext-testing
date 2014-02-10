@@ -19,6 +19,10 @@ CI platform. You can read the instructions for doing
 packages installed on your host or VM before running anything in this
 repository.
 
+3) You will want to create a Git repository containing the data files -- such as the
+Gerrit username and private SSH key file for your testing account -- that are used
+in setting up the test platform.
+
 ## Usage
 
 Pick whichever configuration management tool you prefer and run the `install.sh`
