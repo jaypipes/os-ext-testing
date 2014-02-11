@@ -70,6 +70,8 @@ if [[ ! -e "$DATA_PATH/$UPSTREAM_GERRIT_SSH_KEY_PATH" ]]; then
 fi
 export UPSTREAM_GERRIT_SSH_PRIVATE_KEY_CONTENTS=`cat "$DATA_PATH/$UPSTREAM_GERRIT_SSH_KEY_PATH"`
 
+PUBLISH_HOST=${PUBLISH_HOST:-localhost}
+
 # Create a self-signed SSL certificate for use in Apache
 if [[ ! -e $APACHE_SSL_ROOT_DIR/new.ssl.csr ]]; then
     echo "Creating self-signed SSL certificate for Apache"
@@ -113,7 +115,8 @@ JENKINS_SSH_PUBLIC_KEY=`sudo cat $JENKINS_KEY_FILE_PATH.pub`
 CLASS_ARGS="jenkins_ssh_public_key => '$JENKINS_SSH_PUBLIC_KEY', jenkins_ssh_private_key => '$JENKINS_SSH_PRIVATE_KEY', "
 CLASS_ARGS="$CLASS_ARGS ssl_cert_file_contents => '$APACHE_SSL_CERT_FILE', ssl_key_file_contents => '$APACHE_SSL_KEY_FILE', "
 CLASS_ARGS="$CLASS_ARGS upstream_gerrit_user => '$UPSTREAM_GERRIT_USER', "
-CLASS_ARGS="$CLASS_ARGS upstream_gerrit_ssh_private_key => '$UPSTREAM_SSH_PRIVATE_KEY_CONTENTS', "
+CLASS_ARGS="$CLASS_ARGS upstream_gerrit_ssh_private_key => '$UPSTREAM_GERRIT_SSH_PRIVATE_KEY_CONTENTS', "
+CLASS_ARGS="$CLASS_ARGS publish_host => '$PUBLISH_HOST', "
 
 # Doing this here because ran into one problem after another trying
 # to do this in Puppet... which won't let me execute Ruby code in

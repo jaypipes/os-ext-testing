@@ -137,7 +137,7 @@ class os_ext_testing::ci (
 
   if $manage_jenkins_jobs == true {
     class { '::jenkins::job_builder':
-      url      => "http://jenkins/",
+      url      => "http://127.0.0.1:8080/",
       username => 'jenkins',
       password => '',
     }
