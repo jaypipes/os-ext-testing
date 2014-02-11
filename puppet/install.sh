@@ -117,6 +117,7 @@ CLASS_ARGS="$CLASS_ARGS ssl_cert_file_contents => '$APACHE_SSL_CERT_FILE', ssl_k
 CLASS_ARGS="$CLASS_ARGS upstream_gerrit_user => '$UPSTREAM_GERRIT_USER', "
 CLASS_ARGS="$CLASS_ARGS upstream_gerrit_ssh_private_key => '$UPSTREAM_GERRIT_SSH_PRIVATE_KEY_CONTENTS', "
 CLASS_ARGS="$CLASS_ARGS publish_host => '$PUBLISH_HOST', "
+CLASS_ARGS="$CLASS_ARGS data_repo_dir => '$DATA_PATH', "
 
 # Doing this here because ran into one problem after another trying
 # to do this in Puppet... which won't let me execute Ruby code in
