@@ -32,5 +32,5 @@ Bash script, as the root user:
 
 ```
 wget https://raw.github.com/jaypipes/os-ext-testing/master/puppet/install.sh
-sudo bash install.sh
+bash install.sh
 ```

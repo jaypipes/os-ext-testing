@@ -33,5 +33,5 @@ the puppet stuffs:
 
 ```
 wget https://raw.github.com/jaypipes/os-ext-testing/master/puppet/install.sh
-sudo bash install.sh
+bash install.sh
 ```

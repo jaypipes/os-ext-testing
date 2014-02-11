@@ -142,16 +142,12 @@ class os_ext_testing::ci (
       password => '',
     }
 
-    # Here, we create the JJB config directory and populate it with
-    # files from both the os-ext-testing repository and the data
-    # repository's etc/jenkins_jobs/config directory.
     file { '/etc/jenkins_jobs/config':
       ensure  => directory,
       owner   => 'root',
       group   => 'root',
       mode    => '0755',
       recurse => true,
-      purge   => true,
       force   => true,
       source  => 'puppet:///modules/os_ext_testing/jenkins_job_builder/config',
       notify  => Exec['jenkins_jobs_update'],
