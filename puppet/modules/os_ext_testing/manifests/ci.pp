@@ -142,15 +142,6 @@ class os_ext_testing::ci (
       notify  => Exec['jenkins_jobs_update'],
     }
 
-    file { '/etc/jenkins_jobs/config':
-      ensure  => directory,
-      owner   => 'root',
-      group   => 'root',
-      mode    => '0755',
-      recurse => true,
-      notify  => Exec['jenkins_jobs_update'],
-    }
-
     file { '/etc/jenkins_jobs/config/macros.yaml':
       ensure => present,
       owner  => 'root',
