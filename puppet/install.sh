@@ -15,9 +15,9 @@ mkdir -p $JENKINS_TMP_DIR
 JENKINS_KEY_FILE_PATH=$JENKINS_TMP_DIR/jenkins_key
 APACHE_SSL_ROOT_DIR=$THIS_DIR/tmp/apache/ssl
 
-DATA_REPO_INFO_FILE=.data_repo_info
-DATA_PATH=/root/data
-OSEXT_PATH=/root/os-ext-testing
+DATA_REPO_INFO_FILE=$THIS_DIR/.data_repo_info
+DATA_PATH=$THIS_DIR/data
+OSEXT_PATH=$THIS_DIR/os-ext-testing
 PUPPET_MODULE_PATH="--modulepath=$OSEXT_PATH/puppet/modules:/root/config/modules:/etc/puppet/modules"
 
 # Install Puppet and the OpenStack Infra Config source tree
@@ -31,9 +31,12 @@ fi
 
 # Clone or pull the the os-ext-testing repository
 if [[ ! -d $OSEXT_PATH ]]; then
+    echo "Cloning os-ext-testing repo..."
     git clone https://github.com/jaypipes/os-ext-testing $OSEXT_PATH
-elif [[ "$PULL_LATEST_OSEXT_REPO" == "1" ]]; then
-    echo "Pulling latest os-ext-testing repo master."
+fi
+
+if [[ "$PULL_LATEST_OSEXT_REPO" == "1" ]]; then
+    echo "Pulling latest os-ext-testing repo master..."
     cd $OSEXT_PATH; git checkout master && sudo git pull; cd $THIS_DIR
 fi
 
@@ -44,7 +47,7 @@ if [[ ! -e $DATA_REPO_INFO_FILE ]]; then
         echo "Data repository is required to proceed. Exiting."
         exit 1
     fi
-    git clone $data_repo_uri /root/data
+    git clone $data_repo_uri $DATA_PATH
     echo "$data_repo_uri" > $DATA_REPO_INFO_FILE
 else
     data_repo_uri=`cat $DATA_REPO_INFO_FILE`
@@ -57,16 +60,18 @@ if [[ "$PULL_LATEST_DATA_REPO" == "1" ]]; then
 fi
 
 # Pulling in variables from data repository
-source $DATA_PATH/vars.sh
+. $DATA_PATH/vars.sh
 
 if [[ -z $UPSTREAM_GERRIT_USER ]]; then
     echo "Expected to find UPSTREAM_GERRIT_USER in $DATA_PATH/vars.sh. Please correct. Exiting."
+    exit 1
 else
     echo "Using upstream Gerrit user: $UPSTREAM_GERRIT_USER"
 fi
 
 if [[ -e $DATA_PATH/$UPSTREAM_GERRIT_SSH_KEY_PATH ]]; then
     echo "Expected to find $UPSTREAM_GERRIT_SSH_KEY_PATH in $DATA_PATH. Please correct. Exiting."
+    exit 1
 fi
 export UPSTREAM_GERRIT_SSH_PRIVATE_KEY_CONTENTS=`cat $DATA_PATH/$UPSTREAM_GERRIT_SSH_PRIVATE_KEY_PATH`
 

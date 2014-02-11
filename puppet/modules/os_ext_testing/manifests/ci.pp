@@ -26,7 +26,7 @@ class os_ext_testing::ci (
   }
 
   class { '::jenkins::master':
-    vhost_name              => $vhost_name,
+    vhost_name              => "$vhost_name-jenkins",
     logo                    => 'openstack.png',
     ssl_cert_file           => "/etc/ssl/certs/${vhost_name}.pem",
     ssl_key_file            => "/etc/ssl/private/${vhost_name}.key",
@@ -135,8 +135,10 @@ class os_ext_testing::ci (
       recurse => true,
       purge   => true,
       force   => true,
-      source  =>
+      source  => [
         'puppet:///modules/os_ext_testing/jenkins_job_builder/config',
+      , "$data_repo_dir/etc/jenkins_job_builder/config",
+      ],
       notify  => Exec['jenkins_jobs_update'],
     }
 
@@ -146,7 +148,6 @@ class os_ext_testing::ci (
       group   => 'root',
       mode    => '0755',
       recurse => true,
-      source  => "$data_repo_dir/etc/jenkins_job_builder/config",
       notify  => Exec['jenkins_jobs_update'],
     }
 
@@ -169,7 +170,7 @@ class os_ext_testing::ci (
   }
 
   class { '::zuul':
-    vhost_name           => $vhost_name,
+    vhost_name           => "$vhost_name-zuul",
     gerrit_server        => $upstream_gerrit_server,
     gerrit_user          => $upstream_gerrit_user,
     zuul_ssh_private_key => $upstream_gerrit_ssh_private_key,
@@ -184,7 +185,7 @@ class os_ext_testing::ci (
 
   file { '/etc/zuul/layout.yaml':
     ensure => present,
-      source  => "$data_repo_dir/etc/zuul/layout.yaml",
+    source  => "$data_repo_dir/etc/zuul/layout.yaml",
     notify => Exec['zuul-reload'],
   }
 
