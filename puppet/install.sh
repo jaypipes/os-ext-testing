@@ -93,10 +93,10 @@ commonName              = localhost
 emailAddress            = openstack@openstack.org
 ' > ssl_req.conf
     # Create the certificate signing request
-    sudo openssl req -new -config ssl_req.conf -nodes > new.ssl.csr
+    openssl req -new -config ssl_req.conf -nodes > new.ssl.csr
     # Generate the certificate from the CSR
-    sudo openssl rsa -in new.key.pem -out new.cert.key
-    sudo openssl x509 -in new.ssl.csr -out new.cert.cert -req -signkey new.cert.key -days 3650
+    openssl rsa -in new.key.pem -out new.cert.key
+    openssl x509 -in new.ssl.csr -out new.cert.cert -req -signkey new.cert.key -days 3650
     cd $THIS_DIR
 fi
 APACHE_SSL_CERT_FILE=`sudo cat $APACHE_SSL_ROOT_DIR/new.cert.cert`
