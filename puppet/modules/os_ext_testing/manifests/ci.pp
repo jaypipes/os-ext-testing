@@ -137,7 +137,7 @@ class os_ext_testing::ci (
       force   => true,
       source  => [
         'puppet:///modules/os_ext_testing/jenkins_job_builder/config',
-      , "$data_repo_dir/etc/jenkins_job_builder/config",
+        "$data_repo_dir/etc/jenkins_job_builder/config",
       ],
       notify  => Exec['jenkins_jobs_update'],
     }
