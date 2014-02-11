@@ -11,6 +11,7 @@ class os_ext_testing::ci (
   $ssl_chain_file_contents = '',
   $jenkins_ssh_private_key = '',
   $jenkins_ssh_public_key = '',
+  $publish_host = 'localhost',
   $log_root_url= "logs.$publish_host",
   $static_root_url= "static.$publish_host",
   $upstream_gerrit_server = 'review.openstack.org',
