@@ -99,16 +99,16 @@ emailAddress            = openstack@openstack.org
     openssl x509 -in new.ssl.csr -out new.cert.cert -req -signkey new.cert.key -days 3650
     cd $THIS_DIR
 fi
-APACHE_SSL_CERT_FILE=`sudo cat $APACHE_SSL_ROOT_DIR/new.cert.cert`
-APACHE_SSL_KEY_FILE=`sudo cat $APACHE_SSL_ROOT_DIR/new.cert.key`
+APACHE_SSL_CERT_FILE=`cat $APACHE_SSL_ROOT_DIR/new.cert.cert`
+APACHE_SSL_KEY_FILE=`cat $APACHE_SSL_ROOT_DIR/new.cert.key`
 
 # Create an SSH key pair for Jenkins
 if [[ ! -e $JENKINS_KEY_FILE_PATH ]]; then
   ssh-keygen -t rsa -b 1024 -N '' -f $JENKINS_KEY_FILE_PATH
   echo "Created SSH key pair for Jenkins at $JENKINS_KEY_FILE_PATH."
 fi
-JENKINS_SSH_PRIVATE_KEY=`cat $JENKINS_KEY_FILE_PATH`
-JENKINS_SSH_PUBLIC_KEY=`cat $JENKINS_KEY_FILE_PATH.pub`
+JENKINS_SSH_PRIVATE_KEY=`sudo cat $JENKINS_KEY_FILE_PATH`
+JENKINS_SSH_PUBLIC_KEY=`sudo cat $JENKINS_KEY_FILE_PATH.pub`
 
 CLASS_ARGS="jenkins_ssh_public_key => '$JENKINS_SSH_PUBLIC_KEY', jenkins_ssh_private_key => '$JENKINS_SSH_PRIVATE_KEY', "
 CLASS_ARGS="$CLASS_ARGS ssl_cert_file_contents => '$APACHE_SSL_CERT_FILE', ssl_key_file_contents => '$APACHE_SSL_KEY_FILE', "
