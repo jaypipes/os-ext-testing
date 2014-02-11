@@ -18,6 +18,21 @@ class os_ext_testing::ci (
   $upstream_gerrit_ssh_private_key = '',
 ) {
   include os_ext_testing::base
+  include apache
+
+  # Note that we need to do this here, once instead of in the jenkins::master
+  # module because zuul also defines these resource blocks and Puppet barfs.
+  # Upstream probably never noticed this because they do not deploy Zuul and
+  # Jenkins on the same node...
+  a2mod { 'rewrite':
+    ensure => present,
+  }
+  a2mod { 'proxy':
+    ensure => present,
+  }
+  a2mod { 'proxy_http':
+    ensure => present,
+  }
 
   if $ssl_chain_file_contents != '' {
     $ssl_chain_file = '/etc/ssl/certs/intermediate.pem'
