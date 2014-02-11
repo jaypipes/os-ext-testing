@@ -64,7 +64,7 @@ else
     echo "Using upstream Gerrit user: $UPSTREAM_GERRIT_USER"
 fi
 
-if [[ -e $DATA_PATH/$UPSTREAM_GERRIT_SSH_KEY_PATH ]]; then
+if [[ ! -e "$DATA_PATH/$UPSTREAM_GERRIT_SSH_KEY_PATH" ]]; then
     echo "Expected to find $UPSTREAM_GERRIT_SSH_KEY_PATH in $DATA_PATH. Please correct. Exiting."
     exit 1
 fi
