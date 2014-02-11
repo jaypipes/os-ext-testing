@@ -68,7 +68,7 @@ if [[ ! -e "$DATA_PATH/$UPSTREAM_GERRIT_SSH_KEY_PATH" ]]; then
     echo "Expected to find $UPSTREAM_GERRIT_SSH_KEY_PATH in $DATA_PATH. Please correct. Exiting."
     exit 1
 fi
-export UPSTREAM_GERRIT_SSH_PRIVATE_KEY_CONTENTS=`cat $DATA_PATH/$UPSTREAM_GERRIT_SSH_PRIVATE_KEY_PATH`
+export UPSTREAM_GERRIT_SSH_PRIVATE_KEY_CONTENTS=`cat "$DATA_PATH/$UPSTREAM_GERRIT_SSH_KEY_PATH"`
 
 # Create a self-signed SSL certificate for use in Apache
 if [[ ! -e $APACHE_SSL_ROOT_DIR/new.ssl.csr ]]; then
@@ -114,5 +114,12 @@ CLASS_ARGS="jenkins_ssh_public_key => '$JENKINS_SSH_PUBLIC_KEY', jenkins_ssh_pri
 CLASS_ARGS="$CLASS_ARGS ssl_cert_file_contents => '$APACHE_SSL_CERT_FILE', ssl_key_file_contents => '$APACHE_SSL_KEY_FILE', "
 CLASS_ARGS="$CLASS_ARGS upstream_gerrit_user => '$UPSTREAM_GERRIT_USER', "
 CLASS_ARGS="$CLASS_ARGS upstream_gerrit_ssh_private_key => '$UPSTREAM_SSH_PRIVATE_KEY_CONTENTS', "
+
+# Doing this here because ran into one problem after another trying
+# to do this in Puppet... which won't let me execute Ruby code in
+# a manifest and doesn't allow you to "merge" the contents of two
+# directory sources in the file resource. :(
+sudo mkdir -p /etc/jenkins_jobs/config
+sudo cp -r $DATA_PATH/etc/jenkins_jobs/config/* /etc/jenkins_jobs/config/
 
 sudo puppet apply --verbose $PUPPET_MODULE_PATH -e "class {'os_ext_testing::ci': $CLASS_ARGS }"

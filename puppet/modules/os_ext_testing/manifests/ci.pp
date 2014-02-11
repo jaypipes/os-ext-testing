@@ -11,8 +11,8 @@ class os_ext_testing::ci (
   $ssl_chain_file_contents = '',
   $jenkins_ssh_private_key = '',
   $jenkins_ssh_public_key = '',
-  $log_root_url= "logs.$::fqdn",
-  $static_root_url= "static.$::fqdn",
+  $log_root_url= "logs.$publish_host",
+  $static_root_url= "static.$publish_host",
   $upstream_gerrit_server = 'review.openstack.org',
   $upstream_gerrit_user = '',
   $upstream_gerrit_ssh_private_key = '',
@@ -41,10 +41,10 @@ class os_ext_testing::ci (
   }
 
   class { '::jenkins::master':
-    vhost_name              => "$vhost_name-jenkins",
+    vhost_name              => "jenkins",
     logo                    => 'openstack.png',
-    ssl_cert_file           => "/etc/ssl/certs/${vhost_name}.pem",
-    ssl_key_file            => "/etc/ssl/private/${vhost_name}.key",
+    ssl_cert_file           => "/etc/ssl/certs/jenkins.pem",
+    ssl_key_file            => "/etc/ssl/private/jenkins.key",
     ssl_chain_file          => $ssl_chain_file,
     ssl_cert_file_contents  => $ssl_cert_file_contents,
     ssl_key_file_contents   => $ssl_key_file_contents,
@@ -67,6 +67,9 @@ class os_ext_testing::ci (
   }
   jenkins::plugin { 'envinject':
     version => '1.70',
+  }
+  jenkins::plugin { 'gearman-plugin':
+    version => '0.0.3',
   }
   jenkins::plugin { 'git':
     version => '1.1.23',
@@ -134,7 +137,7 @@ class os_ext_testing::ci (
 
   if $manage_jenkins_jobs == true {
     class { '::jenkins::job_builder':
-      url      => "https://${vhost_name}/",
+      url      => "http://jenkins/",
       username => 'jenkins',
       password => '',
     }
@@ -150,10 +153,7 @@ class os_ext_testing::ci (
       recurse => true,
       purge   => true,
       force   => true,
-      source  => [
-        'puppet:///modules/os_ext_testing/jenkins_job_builder/config',
-        "$data_repo_dir/etc/jenkins_job_builder/config",
-      ],
+      source  => 'puppet:///modules/os_ext_testing/jenkins_job_builder/config',
       notify  => Exec['jenkins_jobs_update'],
     }
 
@@ -176,7 +176,7 @@ class os_ext_testing::ci (
   }
 
   class { '::zuul':
-    vhost_name           => "$vhost_name-zuul",
+    vhost_name           => "zuul",
     gerrit_server        => $upstream_gerrit_server,
     gerrit_user          => $upstream_gerrit_user,
     zuul_ssh_private_key => $upstream_gerrit_ssh_private_key,
@@ -184,14 +184,14 @@ class os_ext_testing::ci (
     zuul_url             => $zuul_url,
     push_change_refs     => false,
     job_name_in_report   => true,
-    status_url           => 'http://status.$::fqdn/zuul/',
+    status_url           => 'http://zuul/status',
     statsd_host          => $statsd_host,
     replication_targets  => $replication_targets,
   }
 
   file { '/etc/zuul/layout.yaml':
     ensure => present,
-    source  => "$data_repo_dir/etc/zuul/layout.yaml",
+    source  => "${data_repo_dir}/etc/zuul/layout.yaml",
     notify => Exec['zuul-reload'],
   }
 
