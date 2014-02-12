@@ -56,6 +56,15 @@ fi
 # Pulling in variables from data repository
 . $DATA_PATH/vars.sh
 
+# Create an SSH key pair for Jenkins
+if [[ ! -e $JENKINS_KEY_FILE_PATH ]]; then
+  ssh-keygen -t rsa -b 1024 -N '' -f $JENKINS_KEY_FILE_PATH
+  echo "Created SSH key pair for Jenkins at $JENKINS_KEY_FILE_PATH."
+fi
+JENKINS_SSH_PRIVATE_KEY=`sudo cat $JENKINS_KEY_FILE_PATH`
+JENKINS_SSH_PUBLIC_KEY=`sudo cat $JENKINS_KEY_FILE_PATH.pub`
+
+CLASS_ARGS="ssh_key => '$JENKINS_SSH_PRIVATE_KEY', "
 CLASS_ARGS="$CLASS_ARGS data_repo_dir => '$DATA_PATH', "
 
 sudo puppet apply --verbose $PUPPET_MODULE_PATH -e "class {'os_ext_testing::devstack_slave': $CLASS_ARGS }"
