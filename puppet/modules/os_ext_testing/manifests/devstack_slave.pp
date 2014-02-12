@@ -7,7 +7,6 @@ class os_ext_testing::devstack_slave (
   $ssh_key = '',
   $python3 = false,
   $include_pypy = false,
-  $data_repo_dir = '',
 ) {
   include openstack_project::tmpcleanup
   class { 'jenkins::slave':

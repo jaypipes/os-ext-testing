@@ -126,4 +126,4 @@ CLASS_ARGS="$CLASS_ARGS data_repo_dir => '$DATA_PATH', "
 sudo mkdir -p /etc/jenkins_jobs/config
 sudo cp -r $DATA_PATH/etc/jenkins_jobs/config/* /etc/jenkins_jobs/config/
 
-sudo puppet apply --verbose $PUPPET_MODULE_PATH -e "class {'os_ext_testing::ci': $CLASS_ARGS }"
+sudo puppet apply --verbose $PUPPET_MODULE_PATH -e "class {'os_ext_testing::master': $CLASS_ARGS }"

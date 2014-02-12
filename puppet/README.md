@@ -20,17 +20,34 @@ repository.
 
 3) You will want to create a Git repository containing the data files -- such as the
 Gerrit username and private SSH key file for your testing account -- that are used
-in setting up the test platform. The easiest way to get this started is to copy
-(note: don't fork!) the [example data repo](http://github.com/jaypipes/os-ext-testing-data)
-and adapt to your needs (just read the README)
+in setting up the test platform.
 
 ## Usage
 
-To install Puppet and all the infrastructure components involved
-in an external OpenStack testing platform, simply run the `puppet/install.sh`
-Bash script, as the root user:
+### Setting up the Jenkins Master
+
+On the machine you will use as your Jenkins master, run:
 
 ```
-wget https://raw.github.com/jaypipes/os-ext-testing/master/puppet/install.sh
-bash install.sh
+wget https://raw.github.com/jaypipes/os-ext-testing/master/puppet/install_master.sh
+bash install_master.sh
 ```
+
+The script will install Puppet, create an SSH key for the Jenkins master, create
+self-signed certificates for Apache, and then will ask you for the URL of the Git
+repository you are using as your data repository (see Prerequisites #3 above). Enter
+the URL of your data repository and hit Enter.
+
+Puppet will proceed to set up the Jenkins master.
+
+### Setting up Jenkins Slaves
+
+On each machine you will use as a Jenkins slave, run:
+
+```
+wget https://raw.github.com/jaypipes/os-ext-testing/slave/puppet/install_slave.sh
+bash install_slave.sh
+```
+
+The script will install Puppet, create an SSH key for the Jenkins slave, and then
+Puppet will install the Jenkins slave.
