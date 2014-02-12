@@ -1,3 +1,6 @@
+# A Jenkins slave that will execute jobs that use devstack
+# to set up a full OpenStack environment for test runs.
+
 class os_ext_testing::devstack_slave (
   $bare = true,
   $certname = $::fqdn,
@@ -12,13 +15,5 @@ class os_ext_testing::devstack_slave (
     ssh_key      => $ssh_key,
     python3      => $python3,
     include_pypy => $include_pypy,
-  }
-  include jenkins::cgroups
-  include ulimit
-  ulimit::conf { 'limit_jenkins_procs':
-    limit_domain => 'jenkins',
-    limit_type   => 'hard',
-    limit_item   => 'nproc',
-    limit_value  => '256'
   }
 }
