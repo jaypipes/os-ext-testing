@@ -7,15 +7,18 @@ class os_ext_testing::base(
   if ($::osfamily == 'Debian') {
     include apt
   }
+  include ssh
+  include snmpd
+  include ntp
 
   # Install some base packages
   case $::osfamily {
     'RedHat': {
-      $packages = ['puppet', 'wget']
+      $packages = ['puppet', 'wget', 'strace', 'tcpdump']
       $update_pkg_list_cmd = ''
     }
     'Debian': {
-      $packages = ['puppet', 'wget']
+      $packages = ['puppet', 'wget', 'strace', 'tcpdump']
       $update_pkg_list_cmd = 'apt-get update >/dev/null 2>&1;'
     }
     default: {
@@ -56,6 +59,44 @@ class os_ext_testing::base(
     ensure => present
   }
 
+  if $::osfamily == 'Debian' {
+    # Custom rsyslog config to disable /dev/xconsole noise on Debuntu servers
+    file { '/etc/rsyslog.d/50-default.conf':
+      ensure  => present,
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0644',
+      source  =>
+        'puppet:///modules/openstack_project/rsyslog.d_50-default.conf',
+      replace => true,
+      notify  => Service['rsyslog'],
+    }
+
+    # Ubuntu installs their whoopsie package by default, but it eats through
+    # memory and we don't need it on servers
+    package { 'whoopsie':
+      ensure => absent,
+    }
+  }
+
+  # Increase syslog message size in order to capture
+  # python tracebacks with syslog.
+  file { '/etc/rsyslog.d/99-maxsize.conf':
+    ensure  => present,
+    # Note MaxMessageSize is not a puppet variable.
+    content => '$MaxMessageSize 6k',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    notify  => Service['rsyslog'],
+  }
+
+  service { 'rsyslog':
+    ensure     => running,
+    enable     => true,
+    hasrestart => true,
+  }
+
   include pip
   package { 'virtualenv':
     ensure   => '1.10.1',
@@ -90,6 +131,21 @@ class os_ext_testing::base(
     mode    => '0444',
     content => template('openstack_project/puppet.conf.erb'),
     replace => true,
+  }
+
+  # Although we don't use Nodepool itself, we DO make use of some
+  # of the scripts that are housed in the nodepool openstack-infra/config
+  # files directory.
+  file { '/etc/nodepool/scripts':
+    ensure  => directory,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+    recurse => true,
+    purge   => true,
+    force   => true,
+    require => File['/etc/nodepool'],
+    source  => 'puppet:///modules/openstack_project/nodepool/scripts',
   }
 
 }
