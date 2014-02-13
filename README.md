@@ -109,7 +109,7 @@ Puppet will proceed to set up the Jenkins master.
 On each machine you will use as a Jenkins slave, run:
 
 ```
-wget https://raw.github.com/jaypipes/os-ext-testing/slave/puppet/install_slave.sh
+wget https://raw.github.com/jaypipes/os-ext-testing/master/puppet/install_slave.sh
 bash install_slave.sh
 ```
 
