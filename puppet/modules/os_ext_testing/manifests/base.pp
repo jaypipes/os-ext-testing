@@ -133,6 +133,10 @@ class os_ext_testing::base(
     replace => true,
   }
 
+  file { '/etc/nodepool':
+    ensure => directory,
+  }
+
   # Although we don't use Nodepool itself, we DO make use of some
   # of the scripts that are housed in the nodepool openstack-infra/config
   # files directory.
