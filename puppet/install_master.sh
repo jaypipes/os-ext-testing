@@ -71,7 +71,7 @@ fi
 export UPSTREAM_GERRIT_SSH_PRIVATE_KEY_CONTENTS=`cat "$DATA_PATH/$UPSTREAM_GERRIT_SSH_KEY_PATH"`
 
 # Validate there is a Jenkins SSH key pair in the data repository
-if [[ -z $JENKINS_SSH_KEY_PATH -o ! -e $JENKINS_SSH_KEY_PATH ]]; then
+if [[ ( -z $JENKINS_SSH_KEY_PATH ) || ( ! -e "$DATA_PATH/$JENKINS_SSH_KEY_PATH" ) ]]; then
     echo "Expected to find JENKINS_SSH_KEY_PATH in $DATA_PATH/vars.sh. Please correct. Exiting."
     exit 1
 else
