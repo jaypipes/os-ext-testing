@@ -65,19 +65,22 @@ else
 fi
 
 if [[ ! -e "$DATA_PATH/$UPSTREAM_GERRIT_SSH_KEY_PATH" ]]; then
-    echo "Expected to find $UPSTREAM_GERRIT_SSH_KEY_PATH in $DATA_PATH. Please correct. Exiting."
+    echo "Expected to find UPSTREAM_GERRIT_SSH_KEY_PATH in $DATA_PATH. Please correct. Exiting."
     exit 1
 fi
 export UPSTREAM_GERRIT_SSH_PRIVATE_KEY_CONTENTS=`cat "$DATA_PATH/$UPSTREAM_GERRIT_SSH_KEY_PATH"`
 
 # Validate there is a Jenkins SSH key pair in the data repository
-if [[ ( -z $JENKINS_SSH_KEY_PATH ) || ( ! -e "$DATA_PATH/$JENKINS_SSH_KEY_PATH" ) ]]; then
+if [[ -z $JENKINS_SSH_KEY_PATH ]]; then
     echo "Expected to find JENKINS_SSH_KEY_PATH in $DATA_PATH/vars.sh. Please correct. Exiting."
     exit 1
+elif [[ ! -e "$DATA_PATH/$JENKINS_SSH_KEY_PATH" ]]; then
+    echo "Expected to find Jenkins SSH key pair at $DATA_PATH/$JENKINS_SSH_KEY_PATH, but wasn't found. Please correct. Exiting."
+    exit 1
 else
-    echo "Using Jenkins SSH key path: $JENKINS_SSH_KEY_PATH"
-    JENKINS_SSH_PRIVATE_KEY=`sudo cat $JENKINS_SSH_KEY_PATH`
-    JENKINS_SSH_PUBLIC_KEY=`sudo cat $JENKINS_SSH_KEY_PATH.pub`
+    echo "Using Jenkins SSH key path: $DATA_PATH/$JENKINS_SSH_KEY_PATH"
+    JENKINS_SSH_PRIVATE_KEY=`sudo cat $DATA_PATH/$JENKINS_SSH_KEY_PATH`
+    JENKINS_SSH_PUBLIC_KEY=`sudo cat $DATA_PATH/$JENKINS_SSH_KEY_PATH.pub`
 fi
 
 PUBLISH_HOST=${PUBLISH_HOST:-localhost}
