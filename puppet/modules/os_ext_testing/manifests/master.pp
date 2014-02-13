@@ -2,7 +2,7 @@
 # and installs JJB and Zuul configuration files from a repository
 # called the "data repository".
 
-class os_ext_testing::ci (
+class os_ext_testing::master (
   $vhost_name = $::fqdn,
   $data_repo_dir = '',
   $manage_jenkins_jobs = true,
