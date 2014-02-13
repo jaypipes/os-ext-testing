@@ -57,7 +57,10 @@ data repository:
 1. Copy the **private** SSH key that you submitted when you registered with the upstream
    OpenStack Infrastructure team into somewhere in this repo.
 
-2. Create an SSH key pair that you will use for Jenkins. This SSH key pair will live
+2. If you do not want to use the SSH key pair in the `os-ext-testing-data` example
+   data repository and want to create your own SSH key pair, do this step.
+
+   Create an SSH key pair that you will use for Jenkins. This SSH key pair will live
    in the `/var/lib/jenkins/.ssh/` directory on the master Jenkins host, and it will
    be added to the `/home/jenkins/.ssh/authorized_keys` file of all slave hosts::
 
