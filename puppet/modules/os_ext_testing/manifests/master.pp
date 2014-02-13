@@ -12,8 +12,8 @@ class os_ext_testing::master (
   $jenkins_ssh_private_key = '',
   $jenkins_ssh_public_key = '',
   $publish_host = 'localhost',
-  $log_root_url= "logs.$publish_host",
-  $static_root_url= "static.$publish_host",
+  $log_root_url= "$publish_host/logs",
+  $static_root_url= "$publish_host/static",
   $upstream_gerrit_server = 'review.openstack.org',
   $upstream_gerrit_user = '',
   $upstream_gerrit_ssh_private_key = '',
@@ -136,6 +136,18 @@ class os_ext_testing::master (
     version => '0.24',
   }
 
+  # We need this set up to ignore host keys like slaves
+  # otherwise Zuul won't properly start as it tries to
+  # git clone projects and runs into known host problems.
+  file { '/var/lib/jenkins/.ssh/config':
+    ensure  => present,
+    owner   => 'jenkins',
+    group   => 'jenkins',
+    mode    => '0640',
+    require => File['/var/lib/jenkins/.ssh'],
+    source  => 'puppet:///modules/jenkins/ssh_config',
+  }
+
   if $manage_jenkins_jobs == true {
     class { '::jenkins::job_builder':
       url      => "http://127.0.0.1:8080/",
@@ -181,7 +193,7 @@ class os_ext_testing::master (
     zuul_url             => $zuul_url,
     push_change_refs     => false,
     job_name_in_report   => true,
-    status_url           => 'http://zuul/status',
+    status_url           => "http://$publish_host/zuul/status",
     statsd_host          => $statsd_host,
     replication_targets  => $replication_targets,
   }
