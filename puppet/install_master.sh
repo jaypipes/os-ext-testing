@@ -1,18 +1,16 @@
 #! /usr/bin/env bash
 
+# Sets up a master Jenkins server and associated machinery like
+# Zuul, JJB, Gearman, etc.
+
 set -e
 
 THIS_DIR=`pwd`
 
-JENKINS_TMP_DIR=$THIS_DIR/tmp/jenkins
-mkdir -p $JENKINS_TMP_DIR
-
-JENKINS_KEY_FILE_PATH=$JENKINS_TMP_DIR/jenkins_key
-APACHE_SSL_ROOT_DIR=$THIS_DIR/tmp/apache/ssl
-
 DATA_REPO_INFO_FILE=$THIS_DIR/.data_repo_info
 DATA_PATH=$THIS_DIR/data
 OSEXT_PATH=$THIS_DIR/os-ext-testing
+OSEXT_REPO=https://github.com/jaypipes/os-ext-testing
 PUPPET_MODULE_PATH="--modulepath=$OSEXT_PATH/puppet/modules:/root/config/modules:/etc/puppet/modules"
 
 # Install Puppet and the OpenStack Infra Config source tree
@@ -27,7 +25,7 @@ fi
 # Clone or pull the the os-ext-testing repository
 if [[ ! -d $OSEXT_PATH ]]; then
     echo "Cloning os-ext-testing repo..."
-    git clone https://github.com/jaypipes/os-ext-testing $OSEXT_PATH
+    git clone $OSEXT_REPO $OSEXT_PATH
 fi
 
 if [[ "$PULL_LATEST_OSEXT_REPO" == "1" ]]; then
@@ -57,6 +55,8 @@ fi
 # Pulling in variables from data repository
 . $DATA_PATH/vars.sh
 
+# Validate that the upstream gerrit user and key are present in the data
+# repository
 if [[ -z $UPSTREAM_GERRIT_USER ]]; then
     echo "Expected to find UPSTREAM_GERRIT_USER in $DATA_PATH/vars.sh. Please correct. Exiting."
     exit 1
@@ -70,9 +70,20 @@ if [[ ! -e "$DATA_PATH/$UPSTREAM_GERRIT_SSH_KEY_PATH" ]]; then
 fi
 export UPSTREAM_GERRIT_SSH_PRIVATE_KEY_CONTENTS=`cat "$DATA_PATH/$UPSTREAM_GERRIT_SSH_KEY_PATH"`
 
+# Validate there is a Jenkins SSH key pair in the data repository
+if [[ -z $JENKINS_SSH_KEY_PATH -o ! -e $JENKINS_SSH_KEY_PATH ]]; then
+    echo "Expected to find JENKINS_SSH_KEY_PATH in $DATA_PATH/vars.sh. Please correct. Exiting."
+    exit 1
+else
+    echo "Using Jenkins SSH key path: $JENKINS_SSH_KEY_PATH"
+    JENKINS_SSH_PRIVATE_KEY=`sudo cat $JENKINS_SSH_KEY_PATH`
+    JENKINS_SSH_PUBLIC_KEY=`sudo cat $JENKINS_SSH_KEY_PATH.pub`
+fi
+
 PUBLISH_HOST=${PUBLISH_HOST:-localhost}
 
 # Create a self-signed SSL certificate for use in Apache
+APACHE_SSL_ROOT_DIR=$THIS_DIR/tmp/apache/ssl
 if [[ ! -e $APACHE_SSL_ROOT_DIR/new.ssl.csr ]]; then
     echo "Creating self-signed SSL certificate for Apache"
     mkdir -p $APACHE_SSL_ROOT_DIR
@@ -103,14 +114,6 @@ emailAddress            = openstack@openstack.org
 fi
 APACHE_SSL_CERT_FILE=`cat $APACHE_SSL_ROOT_DIR/new.cert.cert`
 APACHE_SSL_KEY_FILE=`cat $APACHE_SSL_ROOT_DIR/new.cert.key`
-
-# Create an SSH key pair for Jenkins
-if [[ ! -e $JENKINS_KEY_FILE_PATH ]]; then
-  ssh-keygen -t rsa -b 1024 -N '' -f $JENKINS_KEY_FILE_PATH
-  echo "Created SSH key pair for Jenkins at $JENKINS_KEY_FILE_PATH."
-fi
-JENKINS_SSH_PRIVATE_KEY=`sudo cat $JENKINS_KEY_FILE_PATH`
-JENKINS_SSH_PUBLIC_KEY=`sudo cat $JENKINS_KEY_FILE_PATH.pub`
 
 CLASS_ARGS="jenkins_ssh_public_key => '$JENKINS_SSH_PUBLIC_KEY', jenkins_ssh_private_key => '$JENKINS_SSH_PRIVATE_KEY', "
 CLASS_ARGS="$CLASS_ARGS ssl_cert_file_contents => '$APACHE_SSL_CERT_FILE', ssl_key_file_contents => '$APACHE_SSL_KEY_FILE', "

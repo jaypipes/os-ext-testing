@@ -1,5 +1,9 @@
 # OpenStack External Test Platform Deployer
 
+!! THIS REPOSITORY IS VERY MUCH A WORK IN PROGRESS !!
+
+PLEASE USE AT YOUR OWN RISK AND PROVIDE FEEDBACK IF YOU CAN!
+
 This repository contains documentation and modules in a variety
 of configuration management systems that demonstrates setting up
 a real-world external testing platform that links with the upstream
@@ -13,17 +17,71 @@ Currently only Puppet modules are complete and tested. Ansible
 
 ## Pre-requisites
 
-1) You will need to register a Gerrit account with the upstream OpenStack
+The following are pre-requisite steps before you install anything:
+
+1) Get a Gerrit account for your testing system registered
+2) Ensure base packages installed on your target hosts/VMs
+3) Set up your data repository
+
+Below are detailed instructions for each step.
+
+### Registering an Upstream Gerrit Account
+
+You will need to register a Gerrit account with the upstream OpenStack
 CI platform. You can read the instructions for doing
 [that](http://ci.openstack.org/third_party.html#requesting-a-service-account)
 
-2) You will need to have the `wget`, `openssl`, `ssl-cert` and `ca-certificates`
-packages installed on your host or VM before running anything in this
-repository.
+### Ensure Basic Packages on Hosts/VMs
 
-3) You will want to create a Git repository containing the data files -- such as the
+We will be installing a Jenkins master server and infrastructure on one
+host or virtual machine and one or more Jenkins slave servers on hosts or VMs.
+
+On each of these target nodes, you will want the base image to have the 
+`wget`, `openssl`, `ssl-cert` and `ca-certificates` packages installed before
+running anything in this repository.
+
+### Set Up Your Data Repository 
+
+You will want to create a Git repository containing configuration data files -- such as the
 Gerrit username and private SSH key file for your testing account -- that are used
 in setting up the test platform.
+
+The easiest way to get your data repository set up is to make a copy of the example
+repository I set up here:
+
+http://github.com/jaypipes/os-ext-testing-data
+
+and put it somewhere private. There are a few things you will need to do in this
+data repository:
+
+1. Copy the **private** SSH key that you submitted when you registered with the upstream
+   OpenStack Infrastructure team into somewhere in this repo.
+
+2. Create an SSH key pair that you will use for Jenkins. This SSH key pair will live
+   in the `/var/lib/jenkins/.ssh/` directory on the master Jenkins host, and it will
+   be added to the `/home/jenkins/.ssh/authorized_keys` file of all slave hosts::
+
+    ssh-keygen -t rsa -b 1024 -N '' -f jenkins_key
+
+   Once you do the above, copy the `jenkins_key` and `jenkins_key.pub` files into your
+   data repository.
+
+3. Open up `vars.sh` in an editor.
+
+4. Change the value of the `$UPSTREAM_GERRIT_USER` shell
+   variable to the Gerrit username you registered with the upstream OpenStack Infrastructure
+   team [as detailed in these instructions](http://ci.openstack.org/third_party.html#requesting-a-service-account)
+
+5. Change the value of the `$UPSTREAM_GERRIT_SSH_KEY_PATH` shell variable to the **relative** path
+   of the private SSH key file you copied into the repository in step #2.
+
+   For example, let's say you put your private SSH key file named `mygerritkey` into a directory called `ssh`
+   within the repository, you would set the `$UPSTREAM_GERRIT_SSH_KEY_PATH` value to
+   `ssh/mygerritkey`
+
+6. If for some reason, in step #2 above, you either used a different output filename than `jenkins_key` or put the
+   key pair into some subdirectory of your data repository, then change the value of the `$JENKINS_SSH_KEY_PATH`
+   variable in `vars.sh` to an appropriate value.
 
 ## Usage
 
