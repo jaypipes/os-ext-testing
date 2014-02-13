@@ -139,6 +139,19 @@ class os_ext_testing::master (
   # We need this set up to ignore host keys like slaves
   # otherwise Zuul won't properly start as it tries to
   # git clone projects and runs into known host problems.
+  file { '/home/zuul/.ssh/':
+    ensure => directory,
+    owner => 'zuul',
+    group => 'zuul'
+  }
+  file { '/home/zuul/.ssh/config':
+    ensure  => present,
+    owner   => 'zuul',
+    group   => 'zuul',
+    mode    => '0640',
+    require => File['/home/zuul/.ssh'],
+    source  => 'puppet:///modules/jenkins/ssh_config',
+  }
   file { '/var/lib/jenkins/.ssh/config':
     ensure  => present,
     owner   => 'jenkins',
