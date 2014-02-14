@@ -8,6 +8,7 @@ class os_ext_testing::devstack_slave (
   $python3 = false,
   $include_pypy = false,
 ) {
+  include os_ext_testing::base
   include openstack_project::tmpcleanup
   class { 'jenkins::slave':
     bare         => $bare,
