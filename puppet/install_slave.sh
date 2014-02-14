@@ -86,6 +86,8 @@ CLASS_ARGS="ssh_key => '$JENKINS_SSH_PUBLIC_KEY_CONTENTS', "
 
 sudo puppet apply --verbose $PUPPET_MODULE_PATH -e "class {'os_ext_testing::devstack_slave': $CLASS_ARGS }"
 
-sudo mkdir -p /opt/git
-sudo -i python /opt/nodepool-scripts/cache_git_repos.py
-sudo /opt/nodepool-scripts/prepare_devstack.sh
+if [[ -e /opt/git ]]; then
+    sudo mkdir -p /opt/git
+    sudo -i python /opt/nodepool-scripts/cache_git_repos.py
+    sudo /opt/nodepool-scripts/prepare_devstack.sh
+fi
