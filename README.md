@@ -184,7 +184,7 @@ Jenkins master. To do so manually, follow these steps:
 
 16. Enter `2` in the `Executors` textbox
 
-17. Enter `workspace` in the `Remote FS root` textbox (Ignore the warning about not being an absolute path)
+17. Enter `/home/jenkins/workspaces` in the `Remote FS root` textbox
 
 18. Enter `devstack_slave` in the `Labels` textbox
 
@@ -194,5 +194,5 @@ Jenkins master. To do so manually, follow these steps:
 
 21. Click the `Save` button
 
-22. Click tyhe `Log` link on the left. The log should show the master connecting
+22. Click the `Log` link on the left. The log should show the master connecting
     to the slave, and at the end of the log should be: "Slave successfully connected and online"

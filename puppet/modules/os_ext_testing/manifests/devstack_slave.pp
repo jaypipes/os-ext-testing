@@ -15,4 +15,5 @@ class os_ext_testing::devstack_slave (
     python3      => $python3,
     include_pypy => $include_pypy,
   }
+  include devstack_host
 }
