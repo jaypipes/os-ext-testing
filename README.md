@@ -13,15 +13,18 @@ It installs Jenkins, Jenkins Job Builder (JJB), the Gerrit
 Jenkins plugin, and a set of scripts that make running a variety
 of OpenStack integration tests easy.
 
-Currently only Puppet modules are complete and tested. Ansible
+Currently only Puppet modules are complete and tested. Ansible scripts
+will follow afterwards.
 
 ## Pre-requisites
 
 The following are pre-requisite steps before you install anything:
 
-1) Get a Gerrit account for your testing system registered
-2) Ensure base packages installed on your target hosts/VMs
-3) Set up your data repository
+1. Get a Gerrit account for your testing system registered
+
+2. Ensure base packages installed on your target hosts/VMs
+
+3. Set up your data repository
 
 Below are detailed instructions for each step.
 
