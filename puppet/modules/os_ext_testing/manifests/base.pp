@@ -144,7 +144,6 @@ class os_ext_testing::base(
     recurse => true,
     purge   => true,
     force   => true,
-    require => File['/opt/nodepool-scripts'],
     source  => 'puppet:///modules/openstack_project/nodepool/scripts',
   }
 
