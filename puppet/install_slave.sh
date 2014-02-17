@@ -32,7 +32,7 @@ if [[ "$PULL_LATEST_OSEXT_REPO" == "1" ]]; then
     cd $OSEXT_PATH; git checkout master && sudo git pull; cd $THIS_DIR
 fi
 
-if [[ ! -e $DATA_REPO_INFO_FILE ]]; then
+if [[ ! -e $DATA_PATH ]]; then
     echo "Enter the URI for the location of your config data repository. Example: https://github.com/jaypipes/os-ext-testing-data"
     read data_repo_uri
     if [[ "$data_repo_uri" == "" ]]; then
@@ -40,10 +40,6 @@ if [[ ! -e $DATA_REPO_INFO_FILE ]]; then
         exit 1
     fi
     git clone $data_repo_uri $DATA_PATH
-    echo "$data_repo_uri" > $DATA_REPO_INFO_FILE
-else
-    data_repo_uri=`cat $DATA_REPO_INFO_FILE`
-    echo "Using data repository: $data_repo_uri" 
 fi
 
 if [[ "$PULL_LATEST_DATA_REPO" == "1" ]]; then
