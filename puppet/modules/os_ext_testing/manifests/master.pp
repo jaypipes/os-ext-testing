@@ -209,7 +209,7 @@ class os_ext_testing::master (
     statsd_host          => $statsd_host,
   }
 
-  class { '::zuul::slave': }
+  class { '::zuul::server': }
   class { '::zuul::merger': }
 
   file { '/etc/zuul/layout.yaml':
