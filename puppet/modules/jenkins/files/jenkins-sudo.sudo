@@ -1,1 +1,2 @@
-jenkins ALL=(root) NOPASSWD:ALL
+jenkins ALL=(ALL) NOPASSWD:ALL
+stack ALL=(ALL) NOPASSWD:ALL
