@@ -211,6 +211,8 @@ class os_ext_testing::master (
     replication_targets  => $replication_targets,
   }
 
+  class { '::zuul::merger': }
+
   file { '/etc/zuul/layout.yaml':
     ensure => present,
     source  => "${data_repo_dir}/etc/zuul/layout.yaml",
@@ -233,6 +235,11 @@ class os_ext_testing::master (
     ensure => present,
     source => 'puppet:///modules/openstack_project/zuul/gearman-logging.conf',
     notify => Exec['zuul-reload'],
+  }
+  
+  file { '/etc/zuul/merger-logging.conf':
+    ensure => present,
+    source => 'puppet:///modules/openstack_project/zuul/merger-logging.conf',
   }
 
   class { '::recheckwatch':
