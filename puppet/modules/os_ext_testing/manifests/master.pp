@@ -204,13 +204,12 @@ class os_ext_testing::master (
     zuul_ssh_private_key => $upstream_gerrit_ssh_private_key,
     url_pattern          => $url_pattern,
     zuul_url             => $zuul_url,
-    push_change_refs     => false,
     job_name_in_report   => true,
     status_url           => "http://$publish_host/zuul/status",
     statsd_host          => $statsd_host,
-    replication_targets  => $replication_targets,
   }
 
+  class { '::zuul::slave': }
   class { '::zuul::merger': }
 
   file { '/etc/zuul/layout.yaml':
