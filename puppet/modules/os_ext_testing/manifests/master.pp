@@ -70,7 +70,7 @@ class os_ext_testing::master (
     version => '1.70',
   }
   jenkins::plugin { 'gearman-plugin':
-    version => '0.0.3',
+    version => '0.0.6',
   }
   jenkins::plugin { 'git':
     version => '1.1.23',
