@@ -15,8 +15,12 @@ class os_ext_testing::master (
   $log_root_url= "$publish_host/logs",
   $static_root_url= "$publish_host/static",
   $upstream_gerrit_server = 'review.openstack.org',
+  $gearman_server = '127.0.0.1',
   $upstream_gerrit_user = '',
   $upstream_gerrit_ssh_private_key = '',
+  $upstream_gerrit_host_pub_key = '',
+  $git_email = 'testing@myvendor.com',
+  $git_name = 'MyVendor Jenkins'
 ) {
   include os_ext_testing::base
   include apache
@@ -136,22 +140,6 @@ class os_ext_testing::master (
     version => '0.24',
   }
 
-  # We need this set up to ignore host keys like slaves
-  # otherwise Zuul won't properly start as it tries to
-  # git clone projects and runs into known host problems.
-  file { '/home/zuul/.ssh/':
-    ensure => directory,
-    owner => 'zuul',
-    group => 'zuul'
-  }
-  file { '/home/zuul/.ssh/config':
-    ensure  => present,
-    owner   => 'zuul',
-    group   => 'zuul',
-    mode    => '0640',
-    require => File['/home/zuul/.ssh'],
-    source  => 'puppet:///modules/jenkins/ssh_config',
-  }
   file { '/var/lib/jenkins/.ssh/config':
     ensure  => present,
     owner   => 'jenkins',
@@ -199,6 +187,7 @@ class os_ext_testing::master (
 
   class { '::zuul':
     vhost_name           => "zuul",
+    gearman_server       => $gearman_server,
     gerrit_server        => $upstream_gerrit_server,
     gerrit_user          => $upstream_gerrit_user,
     zuul_ssh_private_key => $upstream_gerrit_ssh_private_key,
@@ -207,10 +196,40 @@ class os_ext_testing::master (
     job_name_in_report   => true,
     status_url           => "http://$publish_host/zuul/status",
     statsd_host          => $statsd_host,
+    git_email            => $git_email,
+    git_name             => $git_name
   }
 
   class { '::zuul::server': }
   class { '::zuul::merger': }
+
+
+  if $upstream_gerrit_ssh_pub_key != '' {
+    file { '/home/zuul/.ssh':
+      ensure  => directory,
+      owner   => 'zuul',
+      group   => 'zuul',
+      mode    => '0700',
+      require => Class['::zuul'],
+    }
+    file { '/home/zuul/.ssh/known_hosts':
+      ensure  => present,
+      owner   => 'zuul',
+      group   => 'zuul',
+      mode    => '0600',
+      content => "[review.openstack.org]:29418,[198.101.231.251]:29418 ${upstream_gerrit_host_pub_key}",
+      replace => true,
+      require => File['/home/zuul/.ssh'],
+    }
+    file { '/home/zuul/.ssh/config':
+      ensure  => present,
+      owner   => 'zuul',
+      group   => 'zuul',
+      mode    => '0700',
+      require => File['/home/zuul/.ssh'],
+      source  => 'puppet:///modules/jenkins/ssh_config',
+    }
+  }
 
   file { '/etc/zuul/layout.yaml':
     ensure => present,
