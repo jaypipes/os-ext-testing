@@ -122,6 +122,7 @@ CLASS_ARGS="$CLASS_ARGS upstream_gerrit_host_pub_key => '$UPSTREAM_GERRIT_HOST_P
 CLASS_ARGS="$CLASS_ARGS git_email => '$GIT_EMAIL', git_name => '$GIT_NAME', "
 CLASS_ARGS="$CLASS_ARGS publish_host => '$PUBLISH_HOST', "
 CLASS_ARGS="$CLASS_ARGS data_repo_dir => '$DATA_PATH', "
+CLASS_ARGS="$CLASS_ARGS url_pattern => '$URL_PATTERN', "
 
 # Doing this here because ran into one problem after another trying
 # to do this in Puppet... which won't let me execute Ruby code in
